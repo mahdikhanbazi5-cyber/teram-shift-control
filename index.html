@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>SHIFT CONTROL — ترام</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F3F5F7;
+    --surface:#FFFFFF;
+    --surface-2:#F8F9FB;
+    --ink:#161C26;
+    --ink-soft:#5B6472;
+    --line:#E4E7EC;
+    --accent:#2A5CE0;
+    --accent-ink:#FFFFFF;
+    --ok:#1FA95C;
+    --ready:#D9A400;
+    --warn:#E0791E;
+    --stop:#E23B3B;
+    --wait:#2A7DE0;
+    --off:#5B6472;
+    --radius:16px;
+    --radius-sm:10px;
+    --shadow:0 1px 2px rgba(20,25,35,.04), 0 8px 24px -12px rgba(20,25,35,.10);
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);}
+  body{
+    font-family:'Vazirmatn', Tahoma, 'B Nazanin', sans-serif;
+    font-size:15px;
+    line-height:1.6;
+    padding-bottom:96px;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{margin:0; font-weight:800;}
+  p{margin:0;}
+  button{font-family:inherit;}
+
+  /* ---------- Header ---------- */
+  .topbar{
+    position:sticky; top:0; z-index:30;
+    background:rgba(243,245,247,.92);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+    padding:14px 16px 12px;
+  }
+  .brand-row{display:flex; align-items:center; justify-content:space-between; gap:12px;}
+  .brand-left{display:flex; align-items:center; gap:10px;}
+  .brand-left img{height:22px; display:block;}
+  .brand-div{width:1px; height:20px; background:var(--line);}
+  .brand-title{font-size:13px; font-weight:800; letter-spacing:.4px;}
+  .brand-sub{font-size:11px; color:var(--ink-soft); margin-top:1px;}
+  .status-pulse{
+    display:flex; align-items:center; gap:6px;
+    font-size:11px; color:var(--ink-soft); font-weight:600;
+  }
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--ok); box-shadow:0 0 0 3px rgba(31,169,92,.15);}
+
+  /* ---------- Tabs ---------- */
+  .tabs{
+    display:flex; gap:6px; margin-top:14px;
+    background:var(--surface-2); padding:4px; border-radius:12px;
+    border:1px solid var(--line);
+  }
+  .tab-btn{
+    flex:1; border:none; background:transparent; padding:9px 8px;
+    border-radius:9px; font-size:13px; font-weight:700; color:var(--ink-soft);
+    cursor:pointer; transition:.15s ease;
+  }
+  .tab-btn.active{background:var(--surface); color:var(--ink); box-shadow:var(--shadow);}
+
+  main{padding:16px; max-width:640px; margin:0 auto;}
+  .view{display:none;}
+  .view.active{display:block;}
+
+  /* ---------- Summary strip ---------- */
+  .summary{
+    display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:16px;
+  }
+  .summary .chip{
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-sm);
+    padding:10px 8px; text-align:center;
+  }
+  .summary .chip b{display:block; font-size:18px; font-weight:800;}
+  .summary .chip span{font-size:10.5px; color:var(--ink-soft); font-weight:600;}
+
+  /* ---------- Cards / sections ---------- */
+  .card{
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+    padding:16px; margin-bottom:14px; box-shadow:var(--shadow);
+  }
+  .card-title{font-size:14px; font-weight:800; margin-bottom:12px; display:flex; align-items:center; gap:8px;}
+  .card-title .num{
+    width:22px;height:22px;border-radius:7px;background:var(--surface-2);
+    display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:var(--ink-soft);
+    border:1px solid var(--line);
+  }
+
+  label.field-label{display:block; font-size:12px; font-weight:700; color:var(--ink-soft); margin:0 0 6px;}
+  .row2{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+  input[type=text], input[type=number], select, textarea{
+    width:100%; border:1px solid var(--line); background:var(--surface-2);
+    border-radius:var(--radius-sm); padding:11px 12px; font-size:14px; color:var(--ink);
+    font-family:inherit; outline:none; transition:.15s;
+  }
+  input:focus, select:focus, textarea:focus{border-color:var(--accent); background:var(--surface);}
+  textarea{resize:vertical; min-height:56px;}
+  .field{margin-bottom:12px;}
+  .field:last-child{margin-bottom:0;}
+
+  /* ---------- Unit accordion ---------- */
+  .unit{
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+    margin-bottom:10px; overflow:hidden; box-shadow:var(--shadow);
+  }
+  .unit-head{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    padding:14px 16px; cursor:pointer; user-select:none;
+  }
+  .unit-head-left{display:flex; align-items:center; gap:10px;}
+  .unit-name{font-size:14.5px; font-weight:800;}
+  .unit-meta{font-size:11px; color:var(--ink-soft); font-weight:600; margin-top:2px;}
+  .unit-badges{display:flex; gap:4px;}
+  .ubadge{width:8px;height:8px;border-radius:50%;}
+  .chevron{width:18px;height:18px; color:var(--ink-soft); transition:transform .2s;}
+  .unit.open .chevron{transform:rotate(180deg);}
+  .unit-body{display:none; padding:0 16px 16px;}
+  .unit.open .unit-body{display:block;}
+
+  .device{
+    border-top:1px solid var(--line); padding:14px 0;
+  }
+  .device:first-child{border-top:none;}
+  .device-name{font-size:13.5px; font-weight:800; margin-bottom:10px; display:flex; align-items:center; gap:8px;}
+  .device-name .live-dot{width:8px;height:8px;border-radius:50%; background:var(--line); transition:.2s;}
+
+  .chipset{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px;}
+  .chip-opt{
+    border:1px solid var(--line); background:var(--surface-2); border-radius:999px;
+    padding:7px 12px; font-size:12px; font-weight:700; color:var(--ink-soft);
+    cursor:pointer; white-space:nowrap; transition:.12s;
+  }
+  .chip-opt.selected{border-color:transparent; color:#fff;}
+  .chip-opt[data-v="green"].selected{background:var(--ok);}
+  .chip-opt[data-v="yellow"].selected{background:var(--ready);}
+  .chip-opt[data-v="orange"].selected{background:var(--warn);}
+  .chip-opt[data-v="red"].selected{background:var(--stop);}
+  .chip-opt[data-v="blue"].selected{background:var(--wait);}
+  .chip-opt[data-v="black"].selected{background:var(--off);}
+  .chip-opt[data-plan="ok"].selected{background:var(--ok);}
+  .chip-opt[data-plan="partial"].selected{background:var(--ready);}
+  .chip-opt[data-plan="none"].selected{background:var(--stop);}
+
+  .device-grid{display:grid; grid-template-columns:1fr 1fr; gap:8px;}
+  .conditional{display:none; margin-top:10px;}
+  .conditional.show{display:block;}
+
+  /* ---------- Tasks ---------- */
+  .task-item{
+    border:1px solid var(--line); border-radius:var(--radius-sm); padding:12px; margin-bottom:10px; background:var(--surface-2);
+  }
+  .task-item .field{margin-bottom:8px;}
+  .task-remove{
+    display:flex; align-items:center; gap:5px; color:var(--stop); font-size:12px; font-weight:700;
+    border:none; background:none; cursor:pointer; padding:4px 0;
+  }
+  .add-btn{
+    width:100%; border:1.5px dashed var(--line); background:transparent; color:var(--accent);
+    border-radius:var(--radius-sm); padding:12px; font-size:13.5px; font-weight:800; cursor:pointer;
+  }
+
+  /* ---------- Submit bar ---------- */
+  .submit-bar{
+    position:fixed; bottom:0; left:0; right:0; z-index:30;
+    background:rgba(243,245,247,.92); backdrop-filter:blur(10px);
+    border-top:1px solid var(--line); padding:12px 16px calc(12px + env(safe-area-inset-bottom));
+  }
+  .submit-inner{max-width:640px; margin:0 auto;}
+  .btn-primary{
+    width:100%; background:var(--accent); color:var(--accent-ink); border:none;
+    border-radius:var(--radius-sm); padding:15px; font-size:15px; font-weight:800; cursor:pointer;
+    box-shadow:0 6px 16px -6px rgba(42,92,224,.55);
+  }
+  .btn-primary:active{opacity:.85;}
+
+  /* ---------- History ---------- */
+  .rec-card{
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+    padding:14px 16px; margin-bottom:10px; box-shadow:var(--shadow); cursor:pointer;
+  }
+  .rec-top{display:flex; justify-content:space-between; align-items:flex-start; gap:8px;}
+  .rec-shift{font-size:13.5px; font-weight:800;}
+  .rec-date{font-size:11px; color:var(--ink-soft); font-weight:600;}
+  .rec-people{font-size:12px; color:var(--ink-soft); margin-top:6px; font-weight:600;}
+  .rec-tags{display:flex; gap:6px; margin-top:10px; flex-wrap:wrap;}
+  .tag{font-size:10.5px; font-weight:800; padding:4px 8px; border-radius:999px;}
+  .tag.red{background:#FDECEC; color:var(--stop);}
+  .tag.amber{background:#FDF3E0; color:var(--warn);}
+  .tag.gray{background:var(--surface-2); color:var(--ink-soft); border:1px solid var(--line);}
+  .empty{
+    text-align:center; padding:48px 16px; color:var(--ink-soft);
+  }
+  .empty .big{font-size:32px; margin-bottom:8px;}
+  .empty p{font-size:13px; font-weight:600;}
+
+  .toast{
+    position:fixed; top:14px; left:50%; transform:translateX(-50%) translateY(-140%);
+    background:var(--ink); color:#fff; padding:11px 18px; border-radius:999px;
+    font-size:13px; font-weight:700; z-index:100; transition:transform .25s ease; box-shadow:var(--shadow);
+    display:flex; align-items:center; gap:8px;
+  }
+  .toast.show{transform:translateX(-50%) translateY(0);}
+  .toast .dot{background:var(--ok);}
+
+  /* ---------- Detail modal ---------- */
+  .modal-backdrop{
+    position:fixed; inset:0; background:rgba(15,20,30,.45); z-index:60; display:none;
+    align-items:flex-end; justify-content:center;
+  }
+  .modal-backdrop.show{display:flex;}
+  .modal-sheet{
+    background:var(--bg); width:100%; max-width:640px; max-height:88vh; overflow-y:auto;
+    border-radius:20px 20px 0 0; padding:18px 16px calc(18px + env(safe-area-inset-bottom));
+  }
+  .modal-handle{width:36px; height:4px; background:var(--line); border-radius:99px; margin:0 auto 14px;}
+  .modal-close{
+    position:sticky; top:0; float:left; background:var(--surface-2); border:1px solid var(--line);
+    border-radius:8px; padding:6px 10px; font-size:12px; font-weight:700; cursor:pointer; color:var(--ink-soft);
+  }
+  .detail-section{margin-bottom:14px;}
+  .detail-section h4{font-size:12px; color:var(--ink-soft); margin-bottom:8px; font-weight:800;}
+  .detail-row{
+    display:flex; justify-content:space-between; align-items:center; gap:10px;
+    padding:10px 0; border-top:1px solid var(--line); font-size:13px;
+  }
+  .detail-row:first-child{border-top:none;}
+  .detail-row .d-name{font-weight:700;}
+  .detail-row .d-meta{color:var(--ink-soft); font-size:11.5px;}
+
+  ::selection{background:rgba(42,92,224,.2);}
+
+  /* ---------- Login ---------- */
+  #login-screen{
+    position:fixed; inset:0; z-index:200; background:var(--bg);
+    display:flex; align-items:center; justify-content:center; padding:24px;
+  }
+  .login-card{
+    width:100%; max-width:360px; background:var(--surface); border:1px solid var(--line);
+    border-radius:20px; padding:28px 24px; box-shadow:var(--shadow);
+  }
+  .login-logo{display:flex; justify-content:center; margin-bottom:6px;}
+  .login-logo img{height:26px;}
+  .login-title{text-align:center; font-size:13px; font-weight:800; color:var(--ink-soft); margin-bottom:26px; letter-spacing:.3px;}
+  .login-error{
+    display:none; background:#FDECEC; color:var(--stop); font-size:12.5px; font-weight:700;
+    border-radius:var(--radius-sm); padding:10px 12px; margin-bottom:14px; text-align:center;
+  }
+  .login-error.show{display:block;}
+  .btn-login{
+    width:100%; background:var(--accent); color:#fff; border:none; border-radius:var(--radius-sm);
+    padding:14px; font-size:14.5px; font-weight:800; cursor:pointer; margin-top:6px;
+    box-shadow:0 6px 16px -6px rgba(42,92,224,.55);
+  }
+  .btn-login:active{opacity:.85;}
+
+  /* ---------- User row in topbar ---------- */
+  .user-row{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    margin-top:10px; padding-top:10px; border-top:1px solid var(--line);
+  }
+  .user-info{display:flex; align-items:center; gap:8px;}
+  .user-avatar{
+    width:30px; height:30px; border-radius:50%; background:var(--accent); color:#fff;
+    display:flex; align-items:center; justify-content:center; font-size:12.5px; font-weight:800; flex-shrink:0;
+  }
+  .user-name{font-size:13px; font-weight:800;}
+  .user-role{font-size:10.5px; color:var(--ink-soft); font-weight:600;}
+  .logout-btn{
+    border:1px solid var(--line); background:var(--surface-2); color:var(--ink-soft);
+    border-radius:8px; padding:7px 11px; font-size:11.5px; font-weight:700; cursor:pointer;
+  }
+</style>
+</head>
+<body>
+
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIsAAAAoCAYAAADOkQm/AAAACXBIWXMAAAsTAAALEwEAmpwYAAAGgWlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNi4wLWMwMDYgNzkuMTY0NzUzLCAyMDIxLzAyLzE1LTExOjUyOjEzICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIiB4bWxuczpzdEV2dD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlRXZlbnQjIiB4bWxuczpwaG90b3Nob3A9Imh0dHA6Ly9ucy5hZG9iZS5jb20vcGhvdG9zaG9wLzEuMC8iIHhtbG5zOmRjPSJodHRwOi8vcHVybC5vcmcvZGMvZWxlbWVudHMvMS4xLyIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgMjIuMyAoV2luZG93cykiIHhtcDpDcmVhdGVEYXRlPSIyMDIyLTEwLTE3VDEyOjI4OjQyKzAzOjMwIiB4bXA6TWV0YWRhdGFEYXRlPSIyMDIyLTEwLTE3VDEyOjI4OjQyKzAzOjMwIiB4bXA6TW9kaWZ5RGF0ZT0iMjAyMi0xMC0xN1QxMjoyODo0MiswMzozMCIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDo1ODc4NTc3ZC0wMWZhLWQwNDItYTMzZS05MGE0NzMwYjhhMjkiIHhtcE1NOkRvY3VtZW50SUQ9ImFkb2JlOmRvY2lkOnBob3Rvc2hvcDo0MjU4OTBlYy05NmRlLTUxNDUtYjEzOS00Mzk5YmYxMjEyY2YiIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDpiZDg5NDM1OS00N2VmLWNiNGQtYTQzOC0yZjgyZTFlNzFjMmQiIHBob3Rvc2hvcDpDb2xvck1vZGU9IjMiIHBob3Rvc2hvcDpJQ0NQcm9maWxlPSJzUkdCIElFQzYxOTY2LTIuMSIgZGM6Zm9ybWF0PSJpbWFnZS9wbmciPiA8eG1wTU06SGlzdG9yeT4gPHJkZjpTZXE+IDxyZGY6bGkgc3RFdnQ6YWN0aW9uPSJjcmVhdGVkIiBzdEV2dDppbnN0YW5jZUlEPSJ4bXAuaWlkOmJkODk0MzU5LTQ3ZWYtY2I0ZC1hNDM4LTJmODJlMWU3MWMyZCIgc3RFdnQ6d2hlbj0iMjAyMi0xMC0xN1QxMjoyODo0MiswMzozMCIgc3RFdnQ6c29mdHdhcmVBZ2VudD0iQWRvYmUgUGhvdG9zaG9wIDIyLjMgKFdpbmRvd3MpIi8+IDxyZGY6bGkgc3RFdnQ6YWN0aW9uPSJzYXZlZCIgc3RFdnQ6aW5zdGFuY2VJRD0ieG1wLmlpZDo1ODc4NTc3ZC0wMWZhLWQwNDItYTMzZS05MGE0NzMwYjhhMjkiIHN0RXZ0OndoZW49IjIwMjItMTAtMTdUMTI6Mjg6NDIrMDM6MzAiIHN0RXZ0OnNvZnR3YXJlQWdlbnQ9IkFkb2JlIFBob3Rvc2hvcCAyMi4zIChXaW5kb3dzKSIgc3RFdnQ6Y2hhbmdlZD0iLyIvPiA8L3JkZjpTZXE+IDwveG1wTU06SGlzdG9yeT4gPHBob3Rvc2hvcDpEb2N1bWVudEFuY2VzdG9ycz4gPHJkZjpCYWc+IDxyZGY6bGk+eG1wLmRpZDpmNzBiNzM5OS1iYmRmLWMxNDQtOTZlYy04Yjg0MjJiYWMyNjk8L3JkZjpsaT4gPC9yZGY6QmFnPiA8L3Bob3Rvc2hvcDpEb2N1bWVudEFuY2VzdG9ycz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz71utUsAAAJG0lEQVR4nO2ce4wVVx3HP/e1TyjYLQuyoLRSsLQQkVqB+qxpbX1UaJrGaIymavyj/mHUxBiN0X/0D+s/xhhtTE1M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" alt="ترام"></div>
+    <div class="login-title">SHIFT CONTROL — ورود</div>
+    <div class="login-error" id="login-error">نام کاربری یا رمز عبور اشتباه است</div>
+    <div class="field">
+      <label class="field-label">نام کاربری</label>
+      <input type="text" id="login-username" placeholder="مثلاً mahdi.khanbazi" autocomplete="username">
+    </div>
+    <div class="field">
+      <label class="field-label">رمز عبور</label>
+      <input type="password" id="login-password" placeholder="••••••" autocomplete="current-password">
+    </div>
+    <button class="btn-login" id="login-btn">ورود</button>
+  </div>
+</div>
+
+<div class="topbar">
+  <div class="brand-row">
+    <div class="brand-left">
+      <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIsAAAAoCAYAAADOkQm/AAAACXBIWXMAAAsTAAALEwEAmpwYAAAGgWlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNi4wLWMwMDYgNzkuMTY0NzUzLCAyMDIxLzAyLzE1LTExOjUyOjEzICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIiB4bWxuczpzdEV2dD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlRXZlbnQjIiB4bWxuczpwaG90b3Nob3A9Imh0dHA6Ly9ucy5hZG9iZS5jb20vcGhvdG9zaG9wLzEuMC8iIHhtbG5zOmRjPSJodHRwOi8vcHVybC5vcmcvZGMvZWxlbWVudHMvMS4xLyIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgMjIuMyAoV2luZG93cykiIHhtcDpDcmVhdGVEYXRlPSIyMDIyLTEwLTE3VDEyOjI4OjQyKzAzOjMwIiB4bXA6TWV0YWRhdGFEYXRlPSIyMDIyLTEwLTE3VDEyOjI4OjQyKzAzOjMwIiB4bXA6TW9kaWZ5RGF0ZT0iMjAyMi0xMC0xN1QxMjoyODo0MiswMzozMCIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDo1ODc4NTc3ZC0wMWZhLWQwNDItYTMzZS05MGE0NzMwYjhhMjkiIHhtcE1NOkRvY3VtZW50SUQ9ImFkb2JlOmRvY2lkOnBob3Rvc2hvcDo0MjU4OTBlYy05NmRlLTUxNDUtYjEzOS00Mzk5YmYxMjEyY2YiIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDpiZDg5NDM1OS00N2VmLWNiNGQtYTQzOC0yZjgyZTFlNzFjMmQiIHBob3Rvc2hvcDpDb2xvck1vZGU9IjMiIHBob3Rvc2hvcDpJQ0NQcm9maWxlPSJzUkdCIElFQzYxOTY2LTIuMSIgZGM6Zm9ybWF0PSJpbWFnZS9wbmciPiA8eG1wTU06SGlzdG9yeT4gPHJkZjpTZXE+IDxyZGY6bGkgc3RFdnQ6YWN0aW9uPSJjcmVhdGVkIiBzdEV2dDppbnN0YW5jZUlEPSJ4bXAuaWlkOmJkODk0MzU5LTQ3ZWYtY2I0ZC1hNDM4LTJmODJlMWU3MWMyZCIgc3RFdnQ6d2hlbj0iMjAyMi0xMC0xN1QxMjoyODo0MiswMzozMCIgc3RFdnQ6c29mdHdhcmVBZ2VudD0iQWRvYmUgUGhvdG9zaG9wIDIyLjMgKFdpbmRvd3MpIi8+IDxyZGY6bGkgc3RFdnQ6YWN0aW9uPSJzYXZlZCIgc3RFdnQ6aW5zdGFuY2VJRD0ieG1wLmlpZDo1ODc4NTc3ZC0wMWZhLWQwNDItYTMzZS05MGE0NzMwYjhhMjkiIHN0RXZ0OndoZW49IjIwMjItMTAtMTdUMTI6Mjg6NDIrMDM6MzAiIHN0RXZ0OnNvZnR3YXJlQWdlbnQ9IkFkb2JlIFBob3Rvc2hvcCAyMi4zIChXaW5kb3dzKSIgc3RFdnQ6Y2hhbmdlZD0iLyIvPiA8L3JkZjpTZXE+IDwveG1wTU06SGlzdG9yeT4gPHBob3Rvc2hvcDpEb2N1bWVudEFuY2VzdG9ycz4gPHJkZjpCYWc+IDxyZGY6bGk+eG1wLmRpZDpmNzBiNzM5OS1iYmRmLWMxNDQtOTZlYy04Yjg0MjJiYWMyNjk8L3JkZjpsaT4gPC9yZGY6QmFnPiA8L3Bob3Rvc2hvcDpEb2N1bWVudEFuY2VzdG9ycz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz71utUsAAAJG0lEQVR4nO2ce4wVVx3HP/e1TyjYLQuyoLRSsLQQkVqB+qxpbX1UaJrGaIymavyj/mHUxBiN0X/0D+s/xhhtTE1M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" alt="ترام">
+      <div class="brand-div"></div>
+      <div>
+        <div class="brand-title">SHIFT CONTROL</div>
+        <div class="brand-sub">سیستم استاندارد تحویل و کنترل شیفت</div>
+      </div>
+    </div>
+  </div>
+  <div class="tabs">
+    <button class="tab-btn active" data-view="form">تحویل شیفت</button>
+    <button class="tab-btn" data-view="history">سوابق</button>
+  </div>
+  <div class="user-row">
+    <div class="user-info">
+      <div class="user-avatar" id="user-avatar">؟</div>
+      <div>
+        <div class="user-name" id="user-welcome">سلام 👋</div>
+        <div class="user-role" id="user-role-label">—</div>
+      </div>
+    </div>
+    <button class="logout-btn" id="logout-btn">خروج</button>
+  </div>
+</div>
+
+<main>
+
+  <!-- ================= FORM VIEW ================= -->
+  <section id="view-form" class="view active">
+
+    <div class="summary" id="summary-strip">
+      <div class="chip"><b id="sum-active">۰</b><span>در تولید</span></div>
+      <div class="chip"><b id="sum-stop">۰</b><span>متوقف / مشکل</span></div>
+      <div class="chip"><b id="sum-tasks">۰</b><span>کار باقی‌مانده</span></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="num">۱</span> اطلاعات تحویل</div>
+      <div class="row2">
+        <div class="field">
+          <label class="field-label">تحویل از (شیفت)</label>
+          <select id="shift-from">
+            <option value="A">شیفت A</option>
+            <option value="B">شیفت B</option>
+            <option value="C">شیفت C</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="field-label">تحویل به (شیفت)</label>
+          <select id="shift-to">
+            <option value="B">شیفت B</option>
+            <option value="A">شیفت A</option>
+            <option value="C">شیفت C</option>
+          </select>
+        </div>
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label class="field-label">فورمن تحویل‌دهنده</label>
+          <input type="text" id="foreman-from" placeholder="نام و نام‌خانوادگی">
+        </div>
+        <div class="field">
+          <label class="field-label">فورمن تحویل‌گیرنده</label>
+          <input type="text" id="foreman-to" placeholder="نام و نام‌خانوادگی">
+        </div>
+      </div>
+    </div>
+
+    <div class="card-title" style="margin:18px 4px 10px;"><span class="num">۲</span> وضعیت دستگاه‌ها</div>
+    <div id="units-container"></div>
+
+    <div class="card" style="margin-top:18px;">
+      <div class="card-title"><span class="num">۳</span> کارهای باقی‌مانده / پیگیری شیفت</div>
+      <div id="tasks-container"></div>
+      <button class="add-btn" id="add-task-btn">+ افزودن کار پیگیری</button>
+    </div>
+
+  </section>
+
+  <!-- ================= HISTORY VIEW ================= -->
+  <section id="view-history" class="view">
+    <div id="history-list"></div>
+  </section>
+
+  <!-- ================= STOPS-ONLY CARTABLE ================= -->
+  <section id="view-stops" class="view">
+    <div class="summary" id="stops-summary">
+      <div class="chip"><b id="stops-count">۰</b><span>مورد توقف</span></div>
+      <div class="chip"><b id="stops-minutes">۰</b><span>مجموع دقیقه</span></div>
+      <div class="chip"><b id="stops-units">۰</b><span>واحد درگیر</span></div>
+    </div>
+    <div id="stops-list"></div>
+  </section>
+
+</main>
+
+<div class="submit-bar" id="submit-bar">
+  <div class="submit-inner">
+    <button class="btn-primary" id="submit-btn">ثبت تحویل شیفت</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"><span class="dot" style="width:7px;height:7px;border-radius:50%;"></span><span id="toast-text"></span></div>
+
+<div class="modal-backdrop" id="modal-backdrop">
+  <div class="modal-sheet" id="modal-sheet"></div>
+</div>
+
+<script>
+/* ============ USERS ============ */
+const USERS = [
+  { username:"mahdi.khanbazi",   password:"1234", name:"مهدی خان‌بازی",  role:"foreman", roleLabel:"فورمن شیفت" },
+  { username:"mohammad.kianian", password:"1234", name:"محمد کیانیان",   role:"foreman", roleLabel:"فورمن شیفت" },
+  { username:"mohsen.hosseini",  password:"1234", name:"محسن حسینی",    role:"production_manager", roleLabel:"مدیر تولید" },
+  { username:"hosein.mosavi",    password:"1234", name:"حسین موسوی",    role:"operations_manager", roleLabel:"مدیر بهره‌برداری" },
+  { username:"yaser.ghorbani",   password:"1234", name:"یاسر قربانی",   role:"planning_manager", roleLabel:"مدیر برنامه‌ریزی" },
+  { username:"mahboobe.raskhpor",password:"1234", name:"محبوبه رسخ‌پور", role:"planning_supervisor", roleLabel:"سرپرست برنامه‌ریزی" },
+];
+// roles with 'stops' access only see the stoppages cartable; everyone else gets the full app
+const ROLE_ACCESS = {
+  foreman: 'full',
+  production_manager: 'full',
+  operations_manager: 'full',
+  planning_manager: 'stops',
+  planning_supervisor: 'stops',
+};
+const SESSION_KEY = 'teramSession';
+
+function getSession(){
+  try{ return JSON.parse(localStorage.getItem(SESSION_KEY) || 'null'); }catch(e){ return null; }
+}
+function setSession(user){
+  localStorage.setItem(SESSION_KEY, JSON.stringify({ username:user.username, name:user.name, role:user.role, roleLabel:user.roleLabel }));
+}
+function clearSession(){
+  localStorage.removeItem(SESSION_KEY);
+}
+
+function initials(name){
+  const parts = name.trim().split(' ');
+  return parts.length > 1 ? parts[0][0] + parts[1][0] : parts[0].slice(0,2);
+}
+
+function applySession(session){
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('user-welcome').textContent = 'سلام ' + session.name.split(' ')[0] + ' 👋';
+  document.getElementById('user-role-label').textContent = session.roleLabel;
+  document.getElementById('user-avatar').textContent = initials(session.name);
+
+  const access = ROLE_ACCESS[session.role] || 'full';
+
+  if(access === 'stops'){
+    // restricted cartable: only the stoppages report, no shift-handover form
+    document.querySelector('.tabs').style.display = 'none';
+    document.getElementById('submit-bar').style.display = 'none';
+    document.querySelectorAll('.view').forEach(v=> v.classList.remove('active'));
+    document.getElementById('view-stops').classList.add('active');
+    renderStops();
+    return;
+  }
+
+  // full cartable (foreman / production manager / operations manager)
+  document.querySelector('.tabs').style.display = 'flex';
+  document.getElementById('submit-bar').style.display = 'block';
+  const foremanFromInput = document.getElementById('foreman-from');
+  if(foremanFromInput){
+    foremanFromInput.value = session.name;
+    foremanFromInput.readOnly = true;
+    foremanFromInput.style.background = 'var(--surface-2)';
+    foremanFromInput.style.color = 'var(--ink-soft)';
+  }
+}
+
+function renderStops(){
+  const list = getRecords();
+  const stops = [];
+  list.forEach(rec=>{
+    rec.devices.forEach(d=>{
+      if(d.status === 'red' || d.status === 'orange'){
+        stops.push({
+          unit: d.unit, device: d.device, status: d.status,
+          minutes: d.stopMinutes, reason: d.stopReason, note: d.stopNote,
+          shift: rec.shiftFrom, foreman: rec.foremanFrom, date: rec.createdAt
+        });
+      }
+    });
+  });
+  stops.sort((a,b)=> new Date(b.date) - new Date(a.date));
+
+  const totalMinutes = stops.reduce((sum,s)=> sum + (parseInt(s.minutes)||0), 0);
+  const involvedUnits = new Set(stops.map(s=>s.unit)).size;
+  document.getElementById('stops-count').textContent = toFa(stops.length);
+  document.getElementById('stops-minutes').textContent = toFa(totalMinutes);
+  document.getElementById('stops-units').textContent = toFa(involvedUnits);
+
+  const listEl = document.getElementById('stops-list');
+  if(stops.length === 0){
+    listEl.innerHTML = `<div class="empty"><div class="big">✅</div><p>هیچ توقفی روی این دستگاه ثبت نشده است</p></div>`;
+    return;
+  }
+  listEl.innerHTML = stops.map(s=>{
+    const dt = new Date(s.date);
+    const color = s.status === 'red' ? 'var(--stop)' : 'var(--warn)';
+    return `
+      <div class="rec-card" style="cursor:default;">
+        <div class="rec-top">
+          <div class="rec-shift">${s.unit} / ${s.device}</div>
+          <div class="rec-date">${dt.toLocaleDateString('fa-IR')} — ${dt.toLocaleTimeString('fa-IR',{hour:'2-digit',minute:'2-digit'})}</div>
+        </div>
+        <div class="rec-people">شیفت ${s.shift} · ثبت‌شده توسط ${s.foreman}</div>
+        <div class="rec-tags">
+          <span class="tag" style="background:${color}1A; color:${color};">${statusLabel(s.status)}</span>
+          ${s.minutes ? `<span class="tag gray">${toFa(s.minutes)} دقیقه</span>` : ''}
+          ${s.reason ? `<span class="tag amber">${s.reason}</span>` : ''}
+        </div>
+        ${s.note ? `<p style="font-size:12px; color:var(--ink-soft); margin-top:8px;">${s.note}</p>` : ''}
+      </div>
+    `;
+  }).join('');
+}
+
+document.getElementById('login-btn').addEventListener('click', attemptLogin);
+document.getElementById('login-password').addEventListener('keydown', e=>{ if(e.key === 'Enter') attemptLogin(); });
+
+function attemptLogin(){
+  const u = document.getElementById('login-username').value.trim().toLowerCase();
+  const p = document.getElementById('login-password').value;
+  const user = USERS.find(usr => usr.username.toLowerCase() === u && usr.password === p);
+  const errEl = document.getElementById('login-error');
+  if(!user){
+    errEl.classList.add('show');
+    return;
+  }
+  errEl.classList.remove('show');
+  setSession(user);
+  applySession(getSession());
+}
+
+document.getElementById('logout-btn').addEventListener('click', ()=>{
+  clearSession();
+  document.getElementById('login-username').value = '';
+  document.getElementById('login-password').value = '';
+  document.getElementById('login-screen').style.display = 'flex';
+});
+
+/* ============ DATA ============ */
+const UNITS = [
+  { key:"gluing", name:"جعبه چسبانی", devices:["65.1","65.2","110","Bobst","Gluing 1","145","185","دوتکه چسبان ۱","دوتکه چسبان ۲","دوتکه چسبان ۳"] },
+  { key:"diecut", name:"دایکات", devices:["106 OP","106 K","103","102","106 Eterna","144 IPRSS","144 SR","165.1","165.2"] },
+  { key:"foil", name:"طلاکوب", devices:["طلاکوب ۱","طلاکوب ۲","طلاکوب ۳"] },
+  { key:"lito", name:"لیتولمینت", devices:["اینلاین","آفلاین"] },
+  { key:"windowpatch", name:"ویندوپچ", devices:["F1400","F1000","F1050"] },
+  { key:"stretch", name:"استرچ", devices:["Isfahan Pack","استرچ ۱","شیرینک"] },
+];
+
+const STATUS_OPTS = [
+  { v:"green",  label:"🟢 در حال تولید" },
+  { v:"yellow", label:"🟡 آماده تولید" },
+  { v:"orange", label:"🟠 دارای مشکل" },
+  { v:"red",    label:"🔴 توقف" },
+  { v:"blue",   label:"🔵 منتظر مواد" },
+  { v:"black",  label:"⚫ خارج از برنامه" },
+];
+
+const PLAN_OPTS = [
+  { v:"ok",      label:"✅ پلن OK" },
+  { v:"partial", label:"⚠️ پلن ناقص" },
+  { v:"none",    label:"❌ بدون پلن" },
+];
+
+const STOP_REASONS = [
+  "عدم وجود برنامه","عدم متریال","سرویس هفتگی","کار تستی","آموزش","تغییر کاربری",
+  "اعلان نت","نبود انرژی","نبود نیرو","توقف ناظر","کنترل کیفیت","دفتر مدیریت تولید","عدم تشکیل شیفت","سایر"
+];
+
+const TASK_STATUS = ["باز","در حال پیگیری","انجام‌شده"];
+
+/* ============ STATE ============ */
+let deviceState = {}; // key: unitKey/deviceName -> {status, plan, production, stopMinutes, stopReason, stopNote, note}
+let taskCount = 0;
+
+/* ============ RENDER UNITS ============ */
+const unitsContainer = document.getElementById('units-container');
+
+function deviceKey(unitKey, device){ return unitKey + '__' + device; }
+
+UNITS.forEach(unit=>{
+  const unitEl = document.createElement('div');
+  unitEl.className = 'unit';
+  unitEl.innerHTML = `
+    <div class="unit-head">
+      <div class="unit-head-left">
+        <div>
+          <div class="unit-name">${unit.name}</div>
+          <div class="unit-meta" id="meta-${unit.key}">${unit.devices.length} دستگاه</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div class="unit-badges" id="badges-${unit.key}"></div>
+        <svg class="chevron" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+    </div>
+    <div class="unit-body" id="body-${unit.key}"></div>
+  `;
+  unitEl.querySelector('.unit-head').addEventListener('click', ()=>{
+    unitEl.classList.toggle('open');
+  });
+  unitsContainer.appendChild(unitEl);
+
+  const body = unitEl.querySelector(`#body-${unit.key}`);
+  unit.devices.forEach(device=>{
+    const key = deviceKey(unit.key, device);
+    deviceState[key] = { status:null, plan:null, production:'', stopMinutes:'', stopReason:'', stopNote:'', note:'' };
+
+    const devEl = document.createElement('div');
+    devEl.className = 'device';
+    devEl.innerHTML = `
+      <div class="device-name"><span class="live-dot" id="dot-${key}"></span>${device}</div>
+      <div class="chipset" data-role="status" data-key="${key}">
+        ${STATUS_OPTS.map(o=>`<button type="button" class="chip-opt" data-v="${o.v}">${o.label}</button>`).join('')}
+      </div>
+      <div class="chipset" data-role="plan" data-key="${key}">
+        ${PLAN_OPTS.map(o=>`<button type="button" class="chip-opt" data-plan="${o.v}">${o.label}</button>`).join('')}
+      </div>
+      <div class="device-grid">
+        <div class="field">
+          <label class="field-label">تولید</label>
+          <input type="text" inputmode="numeric" placeholder="مقدار" data-role="production" data-key="${key}">
+        </div>
+        <div class="field">
+          <label class="field-label">توقف (دقیقه)</label>
+          <input type="text" inputmode="numeric" placeholder="مثلاً ۴۵" data-role="stopMinutes" data-key="${key}">
+        </div>
+      </div>
+      <div class="conditional" data-cond="${key}">
+        <div class="field">
+          <label class="field-label">علت توقف</label>
+          <select data-role="stopReason" data-key="${key}">
+            <option value="">انتخاب کنید…</option>
+            ${STOP_REASONS.map(r=>`<option value="${r}">${r}</option>`).join('')}
+          </select>
+        </div>
+        <div class="field">
+          <label class="field-label">توضیحات تکمیلی</label>
+          <textarea data-role="stopNote" data-key="${key}" placeholder="توضیح آزاد…"></textarea>
+        </div>
+      </div>
+      <div class="field" style="margin-top:10px;">
+        <label class="field-label">یادداشت (اختیاری)</label>
+        <textarea data-role="note" data-key="${key}" placeholder="یادداشت آزاد برای این دستگاه…"></textarea>
+      </div>
+    `;
+    body.appendChild(devEl);
+
+    // status chip logic
+    devEl.querySelectorAll('[data-role="status"] .chip-opt').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        devEl.querySelectorAll('[data-role="status"] .chip-opt').forEach(b=>b.classList.remove('selected'));
+        btn.classList.add('selected');
+        deviceState[key].status = btn.dataset.v;
+        updateDeviceDot(key, btn.dataset.v);
+        const cond = devEl.querySelector(`[data-cond="${key}"]`);
+        if(btn.dataset.v === 'red' || btn.dataset.v === 'orange'){
+          cond.classList.add('show');
+        } else {
+          cond.classList.remove('show');
+        }
+        refreshSummary();
+      });
+    });
+
+    // plan chip logic
+    devEl.querySelectorAll('[data-role="plan"] .chip-opt').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        devEl.querySelectorAll('[data-role="plan"] .chip-opt').forEach(b=>b.classList.remove('selected'));
+        btn.classList.add('selected');
+        deviceState[key].plan = btn.dataset.plan;
+      });
+    });
+
+    // text inputs
+    devEl.querySelectorAll('[data-role="production"],[data-role="stopMinutes"],[data-role="stopNote"],[data-role="note"]').forEach(inp=>{
+      inp.addEventListener('input', ()=>{
+        deviceState[key][inp.dataset.role] = inp.value;
+      });
+    });
+    devEl.querySelector('[data-role="stopReason"]').addEventListener('change', (e)=>{
+      deviceState[key].stopReason = e.target.value;
+    });
+  });
+});
+
+function updateDeviceDot(key, v){
+  const dot = document.getElementById('dot-'+key);
+  const colors = {green:'#1FA95C', yellow:'#D9A400', orange:'#E0791E', red:'#E23B3B', blue:'#2A7DE0', black:'#5B6472'};
+  dot.style.background = colors[v] || '#E4E7EC';
+}
+
+function refreshSummary(){
+  let active=0, stop=0;
+  Object.values(deviceState).forEach(d=>{
+    if(d.status==='green' || d.status==='yellow') active++;
+    if(d.status==='red' || d.status==='orange') stop++;
+  });
+  document.getElementById('sum-active').textContent = toFa(active);
+  document.getElementById('sum-stop').textContent = toFa(stop);
+
+  // unit badges
+  UNITS.forEach(unit=>{
+    const badgesEl = document.getElementById('badges-'+unit.key);
+    const counts = {};
+    unit.devices.forEach(d=>{
+      const s = deviceState[deviceKey(unit.key,d)].status;
+      if(s) counts[s] = (counts[s]||0)+1;
+    });
+    const colors = {green:'#1FA95C', yellow:'#D9A400', orange:'#E0791E', red:'#E23B3B', blue:'#2A7DE0', black:'#5B6472'};
+    badgesEl.innerHTML = Object.keys(counts).map(k=>`<span class="ubadge" style="background:${colors[k]}"></span>`).join('');
+  });
+}
+
+function toFa(n){
+  const map = {'0':'۰','1':'۱','2':'۲','3':'۳','4':'۴','5':'۵','6':'۶','7':'۷','8':'۸','9':'۹'};
+  return String(n).replace(/[0-9]/g, d=>map[d]);
+}
+
+/* ============ TASKS ============ */
+const tasksContainer = document.getElementById('tasks-container');
+let tasks = {};
+
+function addTask(){
+  taskCount++;
+  const id = 'task-'+taskCount;
+  tasks[id] = { desc:'', relatedTo:'', status:'باز' };
+
+  const el = document.createElement('div');
+  el.className = 'task-item';
+  el.id = id;
+  const allDeviceOptions = UNITS.map(u=>`<optgroup label="${u.name}">${u.devices.map(d=>`<option value="${u.name} / ${d}">${d}</option>`).join('')}</optgroup>`).join('');
+  el.innerHTML = `
+    <div class="field">
+      <label class="field-label">شرح کار</label>
+      <textarea data-role="desc" placeholder="مثلاً: هماهنگی با QC برای سفارش ۱۲۳۴"></textarea>
+    </div>
+    <div class="row2">
+      <div class="field">
+        <label class="field-label">مربوط به (اختیاری)</label>
+        <select data-role="relatedTo">
+          <option value="">— عمومی —</option>
+          ${allDeviceOptions}
+        </select>
+      </div>
+      <div class="field">
+        <label class="field-label">وضعیت</label>
+        <select data-role="status">
+          ${TASK_STATUS.map(s=>`<option value="${s}">${s}</option>`).join('')}
+        </select>
+      </div>
+    </div>
+    <button type="button" class="task-remove">✕ حذف این کار</button>
+  `;
+  tasksContainer.appendChild(el);
+
+  el.querySelector('[data-role="desc"]').addEventListener('input', e=> tasks[id].desc = e.target.value);
+  el.querySelector('[data-role="relatedTo"]').addEventListener('change', e=> tasks[id].relatedTo = e.target.value);
+  el.querySelector('[data-role="status"]').addEventListener('change', e=> tasks[id].status = e.target.value);
+  el.querySelector('.task-remove').addEventListener('click', ()=>{
+    delete tasks[id];
+    el.remove();
+    refreshTaskCount();
+  });
+
+  refreshTaskCount();
+}
+document.getElementById('add-task-btn').addEventListener('click', addTask);
+
+function refreshTaskCount(){
+  document.getElementById('sum-tasks').textContent = toFa(Object.keys(tasks).length);
+}
+
+/* ============ TABS ============ */
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+    document.getElementById('view-'+btn.dataset.view).classList.add('active');
+    document.getElementById('submit-bar').style.display = btn.dataset.view==='form' ? 'block':'none';
+    if(btn.dataset.view === 'history') renderHistory();
+  });
+});
+
+/* ============ TOAST ============ */
+function showToast(text){
+  const t = document.getElementById('toast');
+  document.getElementById('toast-text').textContent = text;
+  t.classList.add('show');
+  setTimeout(()=> t.classList.remove('show'), 2200);
+}
+
+/* ============ STORAGE ============ */
+const STORAGE_KEY = 'teramShiftRecords';
+
+function getRecords(){
+  try{
+    return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+  }catch(e){ return []; }
+}
+function saveRecords(list){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+}
+
+/* ============ SUBMIT ============ */
+document.getElementById('submit-btn').addEventListener('click', ()=>{
+  const from = document.getElementById('shift-from').value;
+  const to = document.getElementById('shift-to').value;
+  const foremanFrom = document.getElementById('foreman-from').value.trim();
+  const foremanTo = document.getElementById('foreman-to').value.trim();
+
+  if(!foremanFrom || !foremanTo){
+    showToast('نام فورمن تحویل‌دهنده و تحویل‌گیرنده را وارد کنید');
+    return;
+  }
+
+  const devicesOut = [];
+  UNITS.forEach(unit=>{
+    unit.devices.forEach(device=>{
+      const key = deviceKey(unit.key, device);
+      const d = deviceState[key];
+      if(d.status || d.plan || d.production || d.stopMinutes || d.note){
+        devicesOut.push({
+          unit: unit.name, device,
+          status:d.status, plan:d.plan, production:d.production,
+          stopMinutes:d.stopMinutes, stopReason:d.stopReason, stopNote:d.stopNote, note:d.note
+        });
+      }
+    });
+  });
+
+  const tasksOut = Object.values(tasks).filter(t=>t.desc.trim());
+
+  const session = getSession();
+  const record = {
+    id: Date.now(),
+    createdAt: new Date().toISOString(),
+    submittedBy: session ? session.username : null,
+    shiftFrom: from, shiftTo: to,
+    foremanFrom, foremanTo,
+    devices: devicesOut,
+    tasks: tasksOut
+  };
+
+  const list = getRecords();
+  list.unshift(record);
+  saveRecords(list);
+
+  showToast('تحویل شیفت با موفقیت ثبت شد ✅');
+  resetForm();
+});
+
+function resetForm(){
+  const session = getSession();
+  document.getElementById('foreman-from').value = session ? session.name : '';
+  document.getElementById('foreman-to').value = '';
+  document.querySelectorAll('.chip-opt.selected').forEach(b=>b.classList.remove('selected'));
+  document.querySelectorAll('input[type=text], textarea').forEach(i=> i.value='');
+  document.querySelectorAll('select[data-role="stopReason"]').forEach(s=> s.value='');
+  document.querySelectorAll('.conditional').forEach(c=> c.classList.remove('show'));
+  document.querySelectorAll('.live-dot').forEach(d=> d.style.background = '#E4E7EC');
+  document.querySelectorAll('.unit').forEach(u=> u.classList.remove('open'));
+  document.getElementById('badges-'+UNITS[0].key); // no-op keep
+  UNITS.forEach(u=>{
+    document.getElementById('badges-'+u.key).innerHTML = '';
+  });
+  Object.keys(deviceState).forEach(k=>{
+    deviceState[k] = { status:null, plan:null, production:'', stopMinutes:'', stopReason:'', stopNote:'', note:'' };
+  });
+  tasksContainer.innerHTML = '';
+  tasks = {};
+  refreshTaskCount();
+  refreshSummary();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+/* ============ HISTORY VIEW ============ */
+function renderHistory(){
+  const list = getRecords();
+  const container = document.getElementById('history-list');
+  if(list.length === 0){
+    container.innerHTML = `<div class="empty"><div class="big">🗂️</div><p>هنوز هیچ تحویل شیفتی ثبت نشده است</p></div>`;
+    return;
+  }
+  container.innerHTML = list.map(rec=>{
+    const stopCount = rec.devices.filter(d=>d.status==='red' || d.status==='orange').length;
+    const taskCount = rec.tasks.length;
+    const dt = new Date(rec.createdAt);
+    const dateStr = dt.toLocaleDateString('fa-IR');
+    const timeStr = dt.toLocaleTimeString('fa-IR', {hour:'2-digit', minute:'2-digit'});
+    return `
+      <div class="rec-card" data-id="${rec.id}">
+        <div class="rec-top">
+          <div class="rec-shift">شیفت ${rec.shiftFrom} ← شیفت ${rec.shiftTo}</div>
+          <div class="rec-date">${dateStr} — ${timeStr}</div>
+        </div>
+        <div class="rec-people">${rec.foremanFrom} ← تحویل به ← ${rec.foremanTo}</div>
+        <div class="rec-tags">
+          ${stopCount>0 ? `<span class="tag red">${toFa(stopCount)} دستگاه متوقف/مشکل</span>` : `<span class="tag gray">بدون توقف</span>`}
+          ${taskCount>0 ? `<span class="tag amber">${toFa(taskCount)} کار باقی‌مانده</span>` : ''}
+          <span class="tag gray">${toFa(rec.devices.length)} دستگاه ثبت‌شده</span>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  container.querySelectorAll('.rec-card').forEach(card=>{
+    card.addEventListener('click', ()=> openDetail(Number(card.dataset.id)));
+  });
+}
+
+function statusLabel(v){
+  const found = STATUS_OPTS.find(o=>o.v===v);
+  return found ? found.label : '—';
+}
+function planLabel(v){
+  const found = PLAN_OPTS.find(o=>o.v===v);
+  return found ? found.label : '—';
+}
+
+function openDetail(id){
+  const list = getRecords();
+  const rec = list.find(r=>r.id===id);
+  if(!rec) return;
+  const dt = new Date(rec.createdAt);
+
+  const devicesHtml = rec.devices.map(d=>`
+    <div class="detail-row">
+      <div>
+        <div class="d-name">${d.unit} / ${d.device}</div>
+        <div class="d-meta">${statusLabel(d.status)} · ${planLabel(d.plan)}${d.production ? ' · تولید: '+d.production : ''}${d.stopMinutes ? ' · توقف: '+d.stopMinutes+' دقیقه' : ''}${d.stopReason ? ' · علت: '+d.stopReason : ''}</div>
+      </div>
+    </div>
+  `).join('') || '<p style="color:var(--ink-soft); font-size:13px;">دستگاهی ثبت نشده است.</p>';
+
+  const tasksHtml = rec.tasks.map(t=>`
+    <div class="detail-row">
+      <div>
+        <div class="d-name">${t.desc}</div>
+        <div class="d-meta">${t.relatedTo ? t.relatedTo+' · ' : ''}${t.status}</div>
+      </div>
+    </div>
+  `).join('') || '<p style="color:var(--ink-soft); font-size:13px;">کاری ثبت نشده است.</p>';
+
+  document.getElementById('modal-sheet').innerHTML = `
+    <div class="modal-handle"></div>
+    <button class="modal-close" id="modal-close-btn">بستن</button>
+    <div style="clear:both; padding-top:8px;">
+      <h3 style="font-size:16px; margin-bottom:2px;">شیفت ${rec.shiftFrom} ← شیفت ${rec.shiftTo}</h3>
+      <p style="font-size:12px; color:var(--ink-soft); margin-bottom:16px;">${dt.toLocaleDateString('fa-IR')} — ${dt.toLocaleTimeString('fa-IR',{hour:'2-digit',minute:'2-digit'})}</p>
+      <div class="detail-section">
+        <h4>تحویل‌دهنده / تحویل‌گیرنده</h4>
+        <div class="detail-row"><div class="d-name">${rec.foremanFrom} ← ${rec.foremanTo}</div></div>
+      </div>
+      <div class="detail-section">
+        <h4>وضعیت دستگاه‌ها</h4>
+        ${devicesHtml}
+      </div>
+      <div class="detail-section">
+        <h4>کارهای باقی‌مانده</h4>
+        ${tasksHtml}
+      </div>
+    </div>
+  `;
+  document.getElementById('modal-backdrop').classList.add('show');
+  document.getElementById('modal-close-btn').addEventListener('click', closeDetail);
+}
+function closeDetail(){
+  document.getElementById('modal-backdrop').classList.remove('show');
+}
+document.getElementById('modal-backdrop').addEventListener('click', (e)=>{
+  if(e.target.id === 'modal-backdrop') closeDetail();
+});
+
+/* ============ INIT ============ */
+addTask();
+refreshSummary();
+
+const existingSession = getSession();
+if(existingSession){
+  applySession(existingSession);
+} else {
+  document.getElementById('foreman-from').readOnly = false;
+}
+</script>
+</body>
+</html>
