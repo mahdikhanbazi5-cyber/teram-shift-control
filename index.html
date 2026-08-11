@@ -283,6 +283,22 @@
     border-radius:8px; padding:7px 11px; font-size:11.5px; font-weight:700; cursor:pointer;
   }
 </style>
+
+<!-- Firebase SDK (compat) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyDtq_aB2Cb5Z3-qzIR3U3B2Zd6OPw56HmM",
+    authDomain: "teram-shift-control.firebaseapp.com",
+    projectId: "teram-shift-control",
+    storageBucket: "teram-shift-control.firebasestorage.app",
+    messagingSenderId: "53638296009",
+    appId: "1:53638296009:web:2be7cb107424483e927818"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+</script>
 </head>
 <body>
 
@@ -804,16 +820,24 @@ function showToast(text){
   setTimeout(()=> t.classList.remove('show'), 2200);
 }
 
-/* ============ STORAGE ============ */
-const STORAGE_KEY = 'teramShiftRecords';
+/* ============ STORAGE (Firestore) ============ */
+let recordsCache = [];
 
 function getRecords(){
-  try{
-    return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-  }catch(e){ return []; }
+  return recordsCache;
 }
-function saveRecords(list){
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+
+function listenRecords(onChange){
+  db.collection('shiftRecords').orderBy('createdAt','desc').onSnapshot(snapshot=>{
+    recordsCache = snapshot.docs.map(doc=>doc.data());
+    if(onChange) onChange();
+  }, err=>{
+    console.error('Firestore listen error:', err);
+  });
+}
+
+async function addRecord(record){
+  await db.collection('shiftRecords').doc(String(record.id)).set(record);
 }
 
 /* ============ SUBMIT ============ */
@@ -856,12 +880,13 @@ document.getElementById('submit-btn').addEventListener('click', ()=>{
     tasks: tasksOut
   };
 
-  const list = getRecords();
-  list.unshift(record);
-  saveRecords(list);
-
-  showToast('تحویل شیفت با موفقیت ثبت شد ✅');
-  resetForm();
+  addRecord(record).then(()=>{
+    showToast('تحویل شیفت با موفقیت ثبت شد ✅');
+    resetForm();
+  }).catch(err=>{
+    console.error(err);
+    showToast('خطا در ثبت — اتصال اینترنت را بررسی کنید');
+  });
 });
 
 function resetForm(){
@@ -989,6 +1014,12 @@ document.getElementById('modal-backdrop').addEventListener('click', (e)=>{
 /* ============ INIT ============ */
 addTask();
 refreshSummary();
+
+listenRecords(()=>{
+  const activeView = document.querySelector('.view.active');
+  if(activeView && activeView.id === 'view-history') renderHistory();
+  if(activeView && activeView.id === 'view-stops') renderStops();
+});
 
 const existingSession = getSession();
 if(existingSession){
