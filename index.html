@@ -272,55 +272,77 @@
 
   ::selection{background:rgba(42,92,224,.2);}
 
-  /* ---------- Login ---------- */
+  /* ---------- Login (Luxe) ---------- */
   #login-screen{
     position:fixed; inset:0; z-index:200;
     background:
-      radial-gradient(circle at 18% 12%, rgba(91,61,224,.40), transparent 52%),
-      radial-gradient(circle at 88% 18%, rgba(41,82,217,.32), transparent 46%),
-      radial-gradient(circle at 30% 92%, rgba(41,82,217,.22), transparent 50%),
-      linear-gradient(160deg, #0A0D14 0%, #131826 55%, #0D101A 100%);
+      radial-gradient(circle at 15% 10%, rgba(201,162,74,.10), transparent 45%),
+      radial-gradient(circle at 90% 85%, rgba(201,162,74,.08), transparent 50%),
+      linear-gradient(160deg, #060708 0%, #0B0D10 45%, #08090B 100%);
     display:flex; align-items:center; justify-content:center; padding:24px;
     overflow:hidden;
   }
-  .login-orb{
-    position:absolute; border-radius:50%; filter:blur(60px); pointer-events:none;
-    opacity:.55; animation:orbFloat 9s ease-in-out infinite;
+  #login-screen::before{
+    content:''; position:absolute; inset:0; pointer-events:none; opacity:.5;
+    background-image:radial-gradient(rgba(255,255,255,.045) 1px, transparent 1px);
+    background-size:26px 26px;
+    -webkit-mask-image:radial-gradient(circle at 50% 40%, #000 0%, transparent 72%);
+            mask-image:radial-gradient(circle at 50% 40%, #000 0%, transparent 72%);
   }
-  .login-orb.o1{width:220px; height:220px; top:-60px; right:-40px; background:radial-gradient(circle, rgba(91,61,224,.7), transparent 70%);}
-  .login-orb.o2{width:260px; height:260px; bottom:-80px; left:-60px; background:radial-gradient(circle, rgba(41,82,217,.6), transparent 70%); animation-delay:-4s;}
+  .login-orb{
+    position:absolute; border-radius:50%; filter:blur(70px); pointer-events:none;
+    opacity:.35; animation:orbFloat 11s ease-in-out infinite;
+  }
+  .login-orb.o1{width:280px; height:280px; top:-90px; right:-70px; background:radial-gradient(circle, rgba(201,162,74,.55), transparent 70%);}
+  .login-orb.o2{width:300px; height:300px; bottom:-100px; left:-80px; background:radial-gradient(circle, rgba(201,162,74,.30), transparent 70%); animation-delay:-5s;}
   @keyframes orbFloat{
     0%,100%{transform:translateY(0) scale(1);}
-    50%{transform:translateY(-18px) scale(1.06);}
+    50%{transform:translateY(-16px) scale(1.05);}
   }
   .login-card{
-    position:relative; z-index:1; width:100%; max-width:370px;
-    background:rgba(255,255,255,.985);
-    backdrop-filter:blur(20px);
-    border:1px solid rgba(255,255,255,.08);
-    border-radius:26px; padding:34px 28px 28px;
-    box-shadow:0 40px 90px -24px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.03);
-    animation:cardIn .5s cubic-bezier(.2,.8,.2,1);
+    position:relative; z-index:1; width:100%; max-width:380px;
+    background:linear-gradient(180deg, rgba(24,26,30,.92), rgba(15,16,19,.94));
+    border:1px solid rgba(201,162,74,.22);
+    border-radius:20px; padding:40px 32px 32px;
+    box-shadow:0 50px 100px -30px rgba(0,0,0,.85), 0 0 0 1px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.04);
+    animation:cardIn .6s cubic-bezier(.16,.8,.24,1);
   }
   @keyframes cardIn{
-    from{opacity:0; transform:translateY(14px) scale(.98);}
+    from{opacity:0; transform:translateY(18px) scale(.97);}
     to{opacity:1; transform:translateY(0) scale(1);}
   }
-  .login-logo-wrap{display:flex; justify-content:center; margin-bottom:18px;}
+  .login-logo-wrap{display:flex; justify-content:center; margin-bottom:22px;}
   .login-logo{
-    width:64px; height:64px; border-radius:18px; background:var(--accent-grad);
+    width:60px; height:60px; border-radius:50%;
+    background:#101114;
+    border:1px solid rgba(201,162,74,.45);
     display:flex; align-items:center; justify-content:center;
-    box-shadow:0 14px 30px -10px rgba(41,82,217,.55);
+    box-shadow:0 0 0 5px rgba(201,162,74,.06), 0 16px 34px -14px rgba(0,0,0,.7);
+    position:relative;
   }
-  .login-logo img{height:26px; filter:brightness(0) invert(1);}
-  .login-welcome{text-align:center; font-size:19px; font-weight:800; color:var(--ink); margin-bottom:4px;}
+  .login-logo::before{
+    content:''; position:absolute; inset:-1px; border-radius:50%;
+    background:conic-gradient(from 0deg, transparent, rgba(201,162,74,.55), transparent 30%);
+    animation:ringSpin 5s linear infinite; z-index:-1; padding:1px;
+  }
+  @keyframes ringSpin{to{transform:rotate(360deg);}}
+  .login-logo img{height:24px; filter:brightness(0) invert(1) sepia(1) saturate(3) hue-rotate(0deg) brightness(1.6);}
+  .login-eyebrow{
+    text-align:center; font-size:10px; font-weight:700; color:#C9A24A;
+    letter-spacing:2.5px; text-transform:uppercase; margin-bottom:8px;
+  }
+  .login-welcome{text-align:center; font-size:21px; font-weight:800; color:#F3F0E8; margin-bottom:5px; letter-spacing:-.2px;}
   .login-title{
-    text-align:center; font-size:12px; font-weight:700; color:var(--ink-faint);
-    margin-bottom:26px; letter-spacing:.3px;
+    text-align:center; font-size:12px; font-weight:500; color:#8A8578;
+    margin-bottom:8px;
+  }
+  .login-divider{
+    width:36px; height:1px; margin:18px auto 24px;
+    background:linear-gradient(90deg, transparent, #C9A24A, transparent);
   }
   .login-error{
-    display:none; align-items:center; gap:8px; background:#FDECEC; color:var(--stop); font-size:12.5px; font-weight:700;
-    border-radius:var(--radius-sm); padding:10px 12px; margin-bottom:14px; text-align:center;
+    display:none; align-items:center; gap:8px; background:rgba(220,58,58,.12); color:#F0A0A0; font-size:12.5px; font-weight:600;
+    border:1px solid rgba(220,58,58,.28); border-radius:11px; padding:10px 12px; margin-bottom:16px; text-align:center;
     justify-content:center; animation:shake .35s ease;
   }
   .login-error.show{display:flex;}
@@ -329,37 +351,60 @@
     25%{transform:translateX(-4px);}
     75%{transform:translateX(4px);}
   }
-  .login-field{position:relative; margin-bottom:14px;}
+  .login-field{position:relative; margin-bottom:22px;}
+  .login-field label{
+    display:block; font-size:10.5px; font-weight:700; color:#8A8578;
+    letter-spacing:1px; text-transform:uppercase; margin-bottom:9px;
+  }
+  .login-field .input-wrap{position:relative; display:flex; align-items:center;}
   .login-field input{
-    width:100%; border:1.5px solid var(--line); background:var(--surface-2);
-    border-radius:14px; padding:14px 42px 14px 14px; font-size:14.5px; color:var(--ink);
-    font-family:inherit; outline:none; transition:.15s;
+    width:100%; border:none; border-bottom:1.5px solid rgba(255,255,255,.14); background:transparent;
+    border-radius:0; padding:6px 26px 10px 0; font-size:15px; color:#F3F0E8;
+    font-family:inherit; outline:none; transition:.2s;
   }
-  .login-field input:focus{border-color:var(--accent); background:var(--surface); box-shadow:0 0 0 4px rgba(41,82,217,.10);}
+  .login-field input::placeholder{color:#4E4C46;}
+  .login-field .input-wrap::after{
+    content:''; position:absolute; left:0; right:0; bottom:0; height:1.5px;
+    background:linear-gradient(90deg, #C9A24A, #E8CE8F); transform:scaleX(0); transform-origin:right;
+    transition:transform .3s cubic-bezier(.4,0,.2,1);
+  }
+  .login-field.focused .input-wrap::after{transform:scaleX(1); transform-origin:left;}
+  .login-field.focused label{color:#C9A24A;}
   .login-field .field-icon{
-    position:absolute; top:50%; right:14px; transform:translateY(-50%);
-    color:var(--ink-faint); display:flex; pointer-events:none;
+    position:absolute; top:50%; right:0; transform:translateY(-50%);
+    color:#5A5750; display:flex; pointer-events:none; transition:.2s;
   }
+  .login-field.focused .field-icon{color:#C9A24A;}
   .login-field .toggle-pw{
-    position:absolute; top:50%; left:12px; transform:translateY(-50%);
-    color:var(--ink-faint); background:none; border:none; cursor:pointer; padding:4px; display:flex;
+    position:absolute; top:50%; left:0; transform:translateY(-50%);
+    color:#5A5750; background:none; border:none; cursor:pointer; padding:4px; display:flex; transition:.2s;
   }
+  .login-field.focused .toggle-pw{color:#C9A24A;}
   .btn-login{
-    width:100%; background:var(--accent-grad); color:#fff; border:none; border-radius:14px;
-    padding:15px; font-size:14.5px; font-weight:800; cursor:pointer; margin-top:6px;
-    box-shadow:0 12px 26px -8px rgba(41,82,217,.55);
-    transition:transform .12s ease, box-shadow .12s ease, opacity .12s ease;
+    width:100%; position:relative; overflow:hidden;
+    background:linear-gradient(135deg, #C9A24A 0%, #E8CE8F 50%, #C9A24A 100%);
+    background-size:200% auto;
+    color:#141414; border:none; border-radius:12px;
+    padding:15px; font-size:14px; font-weight:800; cursor:pointer; margin-top:10px;
+    letter-spacing:.3px;
+    box-shadow:0 16px 34px -12px rgba(201,162,74,.5);
+    transition:transform .12s ease, box-shadow .12s ease, opacity .12s ease, background-position .5s ease;
     display:flex; align-items:center; justify-content:center; gap:8px;
   }
+  .btn-login:hover{background-position:100% center;}
   .btn-login:active{transform:scale(.98);}
-  .btn-login[disabled]{opacity:.75; cursor:default;}
+  .btn-login[disabled]{opacity:.8; cursor:default;}
   .btn-login .spinner{
-    width:15px; height:15px; border-radius:50%; border:2px solid rgba(255,255,255,.4);
-    border-top-color:#fff; animation:spin .7s linear infinite; display:none;
+    width:15px; height:15px; border-radius:50%; border:2px solid rgba(20,20,20,.3);
+    border-top-color:#141414; animation:spin .7s linear infinite; display:none;
   }
   .btn-login.loading .spinner{display:inline-block;}
   .btn-login.loading .btn-login-label{display:none;}
   @keyframes spin{to{transform:rotate(360deg);}}
+  .login-footer{
+    text-align:center; margin-top:26px; font-size:10.5px; color:#4E4C46; font-weight:600;
+    letter-spacing:.4px;
+  }
   .login-hint{
     text-align:center; margin-top:18px; font-size:11px; color:var(--ink-faint); font-weight:600;
   }
@@ -396,28 +441,37 @@
     <div class="login-logo-wrap">
       <div class="login-logo"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIsAAAAoCAYAAADOkQm/AAAACXBIWXMAAAsTAAALEwEAmpwYAAAGgWlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNi4wLWMwMDYgNzkuMTY0NzUzLCAyMDIxLzAyLzE1LTExOjUyOjEzICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIiB4bWxuczpzdEV2dD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlRXZlbnQjIiB4bWxuczpwaG90b3Nob3A9Imh0dHA6Ly9ucy5hZG9iZS5jb20vcGhvdG9zaG9wLzEuMC8iIHhtbG5zOmRjPSJodHRwOi8vcHVybC5vcmcvZGMvZWxlbWVudHMvMS4xLyIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgMjIuMyAoV2luZG93cykiIHhtcDpDcmVhdGVEYXRlPSIyMDIyLTEwLTE3VDEyOjI4OjQyKzAzOjMwIiB4bXA6TWV0YWRhdGFEYXRlPSIyMDIyLTEwLTE3VDEyOjI4OjQyKzAzOjMwIiB4bXA6TW9kaWZ5RGF0ZT0iMjAyMi0xMC0xN1QxMjoyODo0MiswMzozMCIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDo1ODc4NTc3ZC0wMWZhLWQwNDItYTMzZS05MGE0NzMwYjhhMjkiIHhtcE1NOkRvY3VtZW50SUQ9ImFkb2JlOmRvY2lkOnBob3Rvc2hvcDo0MjU4OTBlYy05NmRlLTUxNDUtYjEzOS00Mzk5YmYxMjEyY2YiIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDpiZDg5NDM1OS00N2VmLWNiNGQtYTQzOC0yZjgyZTFlNzFjMmQiIHBob3Rvc2hvcDpDb2xvck1vZGU9IjMiIHBob3Rvc2hvcDpJQ0NQcm9maWxlPSJzUkdCIElFQzYxOTY2LTIuMSIgZGM6Zm9ybWF0PSJpbWFnZS9wbmciPiA8eG1wTU06SGlzdG9yeT4gPHJkZjpTZXE+IDxyZGY6bGkgc3RFdnQ6YWN0aW9uPSJjcmVhdGVkIiBzdEV2dDppbnN0YW5jZUlEPSJ4bXAuaWlkOmJkODk0MzU5LTQ3ZWYtY2I0ZC1hNDM4LTJmODJlMWU3MWMyZCIgc3RFdnQ6d2hlbj0iMjAyMi0xMC0xN1QxMjoyODo0MiswMzozMCIgc3RFdnQ6c29mdHdhcmVBZ2VudD0iQWRvYmUgUGhvdG9zaG9wIDIyLjMgKFdpbmRvd3MpIi8+IDxyZGY6bGkgc3RFdnQ6YWN0aW9uPSJzYXZlZCIgc3RFdnQ6aW5zdGFuY2VJRD0ieG1wLmlpZDo1ODc4NTc3ZC0wMWZhLWQwNDItYTMzZS05MGE0NzMwYjhhMjkiIHN0RXZ0OndoZW49IjIwMjItMTAtMTdUMTI6Mjg6NDIrMDM6MzAiIHN0RXZ0OnNvZnR3YXJlQWdlbnQ9IkFkb2JlIFBob3Rvc2hvcCAyMi4zIChXaW5kb3dzKSIgc3RFdnQ6Y2hhbmdlZD0iLyIvPiA8L3JkZjpTZXE+IDwveG1wTU06SGlzdG9yeT4gPHBob3Rvc2hvcDpEb2N1bWVudEFuY2VzdG9ycz4gPHJkZjpCYWc+IDxyZGY6bGk+eG1wLmRpZDpmNzBiNzM5OS1iYmRmLWMxNDQtOTZlYy04Yjg0MjJiYWMyNjk8L3JkZjpsaT4gPC9yZGY6QmFnPiA8L3Bob3Rvc2hvcDpEb2N1bWVudEFuY2VzdG9ycz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz71utUsAAAJG0lEQVR4nO2ce4wVVx3HP/e1TyjYLQuyoLRSsLQQkVqB+qxpbX1UaJrGaIymavyj/mHUxBiN0X/0D+s/xhhtTE1M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" alt="ترام"></div>
     </div>
-    <div class="login-welcome">خوش اومدی 👋</div>
-    <div class="login-title">SHIFT CONTROL — سیستم کنترل شیفت</div>
+    <div class="login-eyebrow">ترام</div>
+    <div class="login-welcome">خوش اومدی</div>
+    <div class="login-title">به سامانه کنترل شیفت وارد شوید</div>
+    <div class="login-divider"></div>
     <div class="login-error" id="login-error">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="13"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
       <span>نام کاربری یا رمز عبور اشتباه است</span>
     </div>
-    <div class="login-field">
-      <input type="text" id="login-username" placeholder="نام کاربری" autocomplete="username">
-      <span class="field-icon">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-      </span>
+    <div class="login-field" id="field-username">
+      <label>نام کاربری</label>
+      <div class="input-wrap">
+        <input type="text" id="login-username" placeholder="mahdi.khanbazi" autocomplete="username">
+        <span class="field-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </span>
+      </div>
     </div>
-    <div class="login-field">
-      <input type="password" id="login-password" placeholder="رمز عبور" autocomplete="current-password">
-      <button type="button" class="toggle-pw" id="toggle-pw" aria-label="نمایش رمز">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg>
-      </button>
+    <div class="login-field" id="field-password">
+      <label>رمز عبور</label>
+      <div class="input-wrap">
+        <input type="password" id="login-password" placeholder="••••••" autocomplete="current-password">
+        <button type="button" class="toggle-pw" id="toggle-pw" aria-label="نمایش رمز">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+      </div>
     </div>
     <button class="btn-login" id="login-btn">
       <span class="spinner"></span>
       <span class="btn-login-label">ورود</span>
     </button>
+    <div class="login-footer">SHIFT CONTROL · سیستم تحویل و کنترل شیفت</div>
   </div>
 </div>
 
@@ -682,6 +736,13 @@ document.getElementById('login-password').addEventListener('keydown', e=>{ if(e.
 document.getElementById('toggle-pw').addEventListener('click', ()=>{
   const pwInput = document.getElementById('login-password');
   pwInput.type = pwInput.type === 'password' ? 'text' : 'password';
+});
+
+[['field-username','login-username'],['field-password','login-password']].forEach(([fieldId, inputId])=>{
+  const field = document.getElementById(fieldId);
+  const input = document.getElementById(inputId);
+  input.addEventListener('focus', ()=> field.classList.add('focused'));
+  input.addEventListener('blur', ()=>{ if(!input.value) field.classList.remove('focused'); });
 });
 
 function attemptLogin(){
