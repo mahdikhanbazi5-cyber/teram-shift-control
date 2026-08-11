@@ -3,30 +3,34 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta http-equiv="Pragma" content="no-cache">
 <title>SHIFT CONTROL — ترام</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
   :root{
-    --bg:#F3F5F7;
+    --bg:#EEF1F5;
     --surface:#FFFFFF;
-    --surface-2:#F8F9FB;
-    --ink:#161C26;
-    --ink-soft:#5B6472;
-    --line:#E4E7EC;
-    --accent:#2A5CE0;
+    --surface-2:#F5F7FA;
+    --ink:#12161F;
+    --ink-soft:#5A6472;
+    --ink-faint:#8A93A3;
+    --line:#E1E5EB;
+    --line-strong:#D3D8E0;
+    --accent:#2952D9;
+    --accent-2:#5B3DE0;
+    --accent-grad:linear-gradient(135deg, #3159E8 0%, #5B3DE0 100%);
     --accent-ink:#FFFFFF;
-    --ok:#1FA95C;
-    --ready:#D9A400;
-    --warn:#E0791E;
-    --stop:#E23B3B;
-    --wait:#2A7DE0;
-    --off:#5B6472;
-    --radius:16px;
-    --radius-sm:10px;
-    --shadow:0 1px 2px rgba(20,25,35,.04), 0 8px 24px -12px rgba(20,25,35,.10);
+    --ok:#189A56;
+    --ready:#C99400;
+    --warn:#D96E1A;
+    --stop:#DC3A3A;
+    --wait:#2874D9;
+    --off:#5A6472;
+    --radius:18px;
+    --radius-sm:12px;
+    --shadow:0 1px 2px rgba(15,20,30,.05), 0 12px 28px -14px rgba(15,20,30,.16);
+    --shadow-lg:0 4px 10px rgba(15,20,30,.06), 0 24px 48px -20px rgba(15,20,30,.22);
   }
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
   html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);}
@@ -37,14 +41,26 @@
     padding-bottom:96px;
     -webkit-font-smoothing:antialiased;
   }
-  h1,h2,h3{margin:0; font-weight:800;}
+  h1,h2,h3{margin:0; font-weight:800; letter-spacing:-.01em;}
   p{margin:0;}
   button{font-family:inherit;}
+
+  /* ---------- Signature pulse strip ---------- */
+  .pulse-strip{
+    position:fixed; top:0; left:0; right:0; height:3px; z-index:40;
+    background:var(--line); overflow:hidden;
+  }
+  .pulse-strip::after{
+    content:''; position:absolute; inset:0;
+    background:var(--accent-grad);
+    width:var(--pulse-w, 0%);
+    transition:width .5s cubic-bezier(.4,0,.2,1);
+  }
 
   /* ---------- Header ---------- */
   .topbar{
     position:sticky; top:0; z-index:30;
-    background:rgba(243,245,247,.92);
+    background:rgba(238,241,245,.92);
     backdrop-filter:blur(10px);
     border-bottom:1px solid var(--line);
     padding:14px 16px 12px;
@@ -52,9 +68,12 @@
   .brand-row{display:flex; align-items:center; justify-content:space-between; gap:12px;}
   .brand-left{display:flex; align-items:center; gap:10px;}
   .brand-left img{height:22px; display:block;}
-  .brand-div{width:1px; height:20px; background:var(--line);}
-  .brand-title{font-size:13px; font-weight:800; letter-spacing:.4px;}
-  .brand-sub{font-size:11px; color:var(--ink-soft); margin-top:1px;}
+  .brand-div{width:1px; height:22px; background:var(--line-strong);}
+  .brand-title{
+    font-size:13.5px; font-weight:800; letter-spacing:.6px;
+    background:var(--accent-grad); -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .brand-sub{font-size:11px; color:var(--ink-soft); margin-top:1px; font-weight:600;}
   .status-pulse{
     display:flex; align-items:center; gap:6px;
     font-size:11px; color:var(--ink-soft); font-weight:600;
@@ -177,22 +196,31 @@
   /* ---------- Submit bar ---------- */
   .submit-bar{
     position:fixed; bottom:0; left:0; right:0; z-index:30;
-    background:rgba(243,245,247,.92); backdrop-filter:blur(10px);
+    background:rgba(238,241,245,.92); backdrop-filter:blur(10px);
     border-top:1px solid var(--line); padding:12px 16px calc(12px + env(safe-area-inset-bottom));
   }
-  .submit-inner{max-width:640px; margin:0 auto;}
+  .submit-inner{max-width:640px; margin:0 auto; display:flex; gap:8px;}
   .btn-primary{
-    width:100%; background:var(--accent); color:var(--accent-ink); border:none;
+    flex:1; background:var(--accent-grad); color:var(--accent-ink); border:none;
     border-radius:var(--radius-sm); padding:15px; font-size:15px; font-weight:800; cursor:pointer;
-    box-shadow:0 6px 16px -6px rgba(42,92,224,.55);
+    box-shadow:0 8px 20px -8px rgba(41,82,217,.6);
+    transition:transform .12s ease, box-shadow .12s ease;
   }
-  .btn-primary:active{opacity:.85;}
+  .btn-primary:active{transform:scale(.98); box-shadow:0 4px 10px -6px rgba(41,82,217,.5);}
+  .btn-secondary{
+    background:var(--surface); color:var(--ink); border:1px solid var(--line-strong);
+    border-radius:var(--radius-sm); padding:15px 18px; font-size:14px; font-weight:800; cursor:pointer;
+    box-shadow:var(--shadow);
+  }
+  .btn-secondary:active{opacity:.8;}
 
   /* ---------- History ---------- */
   .rec-card{
     background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
     padding:14px 16px; margin-bottom:10px; box-shadow:var(--shadow); cursor:pointer;
+    transition:transform .12s ease, box-shadow .12s ease;
   }
+  .rec-card:active{transform:scale(.99);}
   .rec-top{display:flex; justify-content:space-between; align-items:flex-start; gap:8px;}
   .rec-shift{font-size:13.5px; font-weight:800;}
   .rec-date{font-size:11px; color:var(--ink-soft); font-weight:600;}
@@ -246,27 +274,41 @@
 
   /* ---------- Login ---------- */
   #login-screen{
-    position:fixed; inset:0; z-index:200; background:var(--bg);
+    position:fixed; inset:0; z-index:200;
+    background:
+      radial-gradient(circle at 20% 15%, rgba(91,61,224,.35), transparent 55%),
+      radial-gradient(circle at 85% 80%, rgba(41,82,217,.30), transparent 50%),
+      linear-gradient(160deg, #0C0F17 0%, #151A26 60%, #10131C 100%);
     display:flex; align-items:center; justify-content:center; padding:24px;
   }
   .login-card{
-    width:100%; max-width:360px; background:var(--surface); border:1px solid var(--line);
-    border-radius:20px; padding:28px 24px; box-shadow:var(--shadow);
+    width:100%; max-width:360px; background:var(--surface); border:1px solid rgba(255,255,255,.06);
+    border-radius:22px; padding:30px 26px; box-shadow:0 30px 70px -20px rgba(0,0,0,.55);
   }
-  .login-logo{display:flex; justify-content:center; margin-bottom:6px;}
-  .login-logo img{height:26px;}
-  .login-title{text-align:center; font-size:13px; font-weight:800; color:var(--ink-soft); margin-bottom:26px; letter-spacing:.3px;}
+  .login-logo{display:flex; justify-content:center; margin-bottom:8px;}
+  .login-logo img{height:28px;}
+  .login-title{
+    text-align:center; font-size:11.5px; font-weight:800; color:var(--ink-faint);
+    margin-bottom:28px; letter-spacing:1.2px; text-transform:uppercase;
+  }
   .login-error{
     display:none; background:#FDECEC; color:var(--stop); font-size:12.5px; font-weight:700;
     border-radius:var(--radius-sm); padding:10px 12px; margin-bottom:14px; text-align:center;
   }
   .login-error.show{display:block;}
   .btn-login{
-    width:100%; background:var(--accent); color:#fff; border:none; border-radius:var(--radius-sm);
-    padding:14px; font-size:14.5px; font-weight:800; cursor:pointer; margin-top:6px;
-    box-shadow:0 6px 16px -6px rgba(42,92,224,.55);
+    width:100%; background:var(--accent-grad); color:#fff; border:none; border-radius:var(--radius-sm);
+    padding:15px; font-size:14.5px; font-weight:800; cursor:pointer; margin-top:8px;
+    box-shadow:0 10px 24px -8px rgba(41,82,217,.55);
+    transition:transform .12s ease;
   }
-  .btn-login:active{opacity:.85;}
+  .btn-login:active{transform:scale(.98);}
+  .login-hint{
+    text-align:center; margin-top:16px; font-size:11px; color:var(--ink-faint); font-weight:600;
+  }
+  .login-hint button{
+    background:none; border:none; color:var(--accent); font-weight:800; font-size:11px; cursor:pointer; padding:0;
+  }
 
   /* ---------- User row in topbar ---------- */
   .user-row{
@@ -285,24 +327,10 @@
     border-radius:8px; padding:7px 11px; font-size:11.5px; font-weight:700; cursor:pointer;
   }
 </style>
-
-<!-- Firebase SDK (compat) -->
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyDtq_aB2Cb5Z3-qzIR3U3B2Zd6OPw56HmM",
-    authDomain: "teram-shift-control.firebaseapp.com",
-    projectId: "teram-shift-control",
-    storageBucket: "teram-shift-control.firebasestorage.app",
-    messagingSenderId: "53638296009",
-    appId: "1:53638296009:web:2be7cb107424483e927818"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
-</script>
 </head>
 <body>
+
+<div class="pulse-strip" id="pulse-strip"></div>
 
 <div id="login-screen">
   <div class="login-card">
@@ -344,7 +372,10 @@
         <div class="user-role" id="user-role-label">—</div>
       </div>
     </div>
-    <button class="logout-btn" id="logout-btn">خروج</button>
+    <div style="display:flex; gap:8px;">
+      <button class="logout-btn" id="settings-btn">⚙️ تنظیمات</button>
+      <button class="logout-btn" id="logout-btn">خروج</button>
+    </div>
   </div>
 </div>
 
@@ -404,6 +435,7 @@
 
   <!-- ================= HISTORY VIEW ================= -->
   <section id="view-history" class="view">
+    <button class="btn-secondary" id="export-excel-btn" style="width:100%; margin-bottom:14px;">⬇︎ دریافت خروجی اکسل</button>
     <div id="history-list"></div>
   </section>
 
@@ -432,23 +464,50 @@
 </div>
 
 <script>
-/* ============ USERS ============ */
-const USERS = [
-  { username:"mahdi.khanbazi",   password:"1234", name:"مهدی خان‌بازی",  role:"foreman", roleLabel:"فورمن شیفت" },
-  { username:"mohammad.kianian", password:"1234", name:"محمد کیانیان",   role:"foreman", roleLabel:"فورمن شیفت" },
-  { username:"mohsen.hosseini",  password:"1234", name:"محسن حسینی",    role:"production_manager", roleLabel:"مدیر تولید" },
-  { username:"hosein.mosavi",    password:"1234", name:"حسین موسوی",    role:"operations_manager", roleLabel:"مدیر بهره‌برداری" },
-  { username:"yaser.ghorbani",   password:"1234", name:"یاسر قربانی",   role:"planning_manager", roleLabel:"مدیر برنامه‌ریزی" },
-  { username:"mahboobe.raskhpor",password:"1234", name:"محبوبه رسخ‌پور", role:"planning_supervisor", roleLabel:"سرپرست برنامه‌ریزی" },
+/* ============ USERS (localStorage-backed store) ============ */
+const USERS_KEY = 'teramUsers';
+
+const SEED_USERS = [
+  { username:"mahdi.khanbazi",   password:"makh1234", name:"مهدی خان‌بازی",  role:"admin", roleLabel:"ادمین" },
+  { username:"mohammad.kianian", password:"moki1234", name:"محمد کیانیان",   role:"foreman", roleLabel:"فورمن شیفت" },
+  { username:"mohsen.hosseini",  password:"moho1234", name:"محسن حسینی",    role:"production_manager", roleLabel:"مدیر تولید" },
+  { username:"hosein.mosavi",    password:"homo1234", name:"حسین موسوی",    role:"operations_manager", roleLabel:"مدیر بهره‌برداری" },
+  { username:"yaser.ghorbani",   password:"yagh1234", name:"یاسر قربانی",   role:"planning_manager", roleLabel:"مدیر برنامه‌ریزی" },
+  { username:"mahboobe.raskhpor",password:"mara1234", name:"محبوبه رسخ‌پور", role:"planning_supervisor", roleLabel:"سرپرست برنامه‌ریزی" },
 ];
+
+const ROLE_LABELS = {
+  admin: "ادمین",
+  foreman: "فورمن شیفت",
+  production_manager: "مدیر تولید",
+  operations_manager: "مدیر بهره‌برداری",
+  planning_manager: "مدیر برنامه‌ریزی",
+  planning_supervisor: "سرپرست برنامه‌ریزی",
+};
 // roles with 'stops' access only see the stoppages cartable; everyone else gets the full app
 const ROLE_ACCESS = {
+  admin: 'full',
   foreman: 'full',
   production_manager: 'full',
   operations_manager: 'full',
   planning_manager: 'stops',
   planning_supervisor: 'stops',
 };
+
+function getUsers(){
+  try{
+    const raw = localStorage.getItem(USERS_KEY);
+    if(!raw){
+      localStorage.setItem(USERS_KEY, JSON.stringify(SEED_USERS));
+      return [...SEED_USERS];
+    }
+    return JSON.parse(raw);
+  }catch(e){ return [...SEED_USERS]; }
+}
+function saveUsers(list){
+  localStorage.setItem(USERS_KEY, JSON.stringify(list));
+}
+
 const SESSION_KEY = 'teramSession';
 
 function getSession(){
@@ -484,7 +543,7 @@ function applySession(session){
     return;
   }
 
-  // full cartable (foreman / production manager / operations manager)
+  // full cartable (foreman / production manager / operations manager / admin)
   document.querySelector('.tabs').style.display = 'flex';
   document.getElementById('submit-bar').style.display = 'block';
   const foremanFromInput = document.getElementById('foreman-from');
@@ -550,7 +609,7 @@ document.getElementById('login-password').addEventListener('keydown', e=>{ if(e.
 function attemptLogin(){
   const u = document.getElementById('login-username').value.trim().toLowerCase();
   const p = document.getElementById('login-password').value;
-  const user = USERS.find(usr => usr.username.toLowerCase() === u && usr.password === p);
+  const user = getUsers().find(usr => usr.username.toLowerCase() === u && usr.password === p);
   const errEl = document.getElementById('login-error');
   if(!user){
     errEl.classList.add('show');
@@ -567,6 +626,185 @@ document.getElementById('logout-btn').addEventListener('click', ()=>{
   document.getElementById('login-password').value = '';
   document.getElementById('login-screen').style.display = 'flex';
 });
+
+document.getElementById('settings-btn').addEventListener('click', openSettingsModal);
+
+/* ============ SETTINGS / ADMIN MODAL ============ */
+function openSettingsModal(){
+  const session = getSession();
+  if(!session) return;
+  const isAdmin = session.role === 'admin';
+
+  document.getElementById('modal-sheet').innerHTML = `
+    <div class="modal-handle"></div>
+    <button class="modal-close" id="modal-close-btn">بستن</button>
+    <div style="clear:both; padding-top:8px;">
+      <h3 style="font-size:16px; margin-bottom:16px;">تنظیمات حساب</h3>
+
+      <div class="detail-section">
+        <h4>تغییر رمز عبور</h4>
+        <div class="field">
+          <label class="field-label">رمز فعلی</label>
+          <input type="password" id="pw-current" placeholder="رمز فعلی">
+        </div>
+        <div class="field">
+          <label class="field-label">رمز جدید</label>
+          <input type="password" id="pw-new" placeholder="رمز جدید">
+        </div>
+        <div class="login-error" id="pw-error" style="margin-top:10px;"></div>
+        <button class="btn-secondary" style="width:100%; margin-top:12px;" id="pw-save-btn">ذخیرهٔ رمز جدید</button>
+      </div>
+
+      ${isAdmin ? `
+      <div class="detail-section" style="margin-top:22px;">
+        <h4>مدیریت کاربران (فقط ادمین)</h4>
+        <div id="admin-users-list"></div>
+        <button class="add-btn" id="admin-add-user-btn" style="margin-top:10px;">+ افزودن کاربر جدید</button>
+      </div>
+      ` : ''}
+    </div>
+  `;
+  document.getElementById('modal-backdrop').classList.add('show');
+  document.getElementById('modal-close-btn').addEventListener('click', closeDetail);
+
+  document.getElementById('pw-save-btn').addEventListener('click', ()=>{
+    const current = document.getElementById('pw-current').value;
+    const next = document.getElementById('pw-new').value;
+    const errEl = document.getElementById('pw-error');
+    const users = getUsers();
+    const idx = users.findIndex(u=> u.username === session.username);
+    if(idx === -1){ errEl.textContent = 'کاربر یافت نشد'; errEl.classList.add('show'); return; }
+    if(users[idx].password !== current){
+      errEl.textContent = 'رمز فعلی اشتباه است';
+      errEl.classList.add('show');
+      return;
+    }
+    if(!next || next.length < 4){
+      errEl.textContent = 'رمز جدید باید حداقل ۴ کاراکتر باشد';
+      errEl.classList.add('show');
+      return;
+    }
+    users[idx].password = next;
+    saveUsers(users);
+    errEl.classList.remove('show');
+    showToast('رمز عبور با موفقیت تغییر کرد ✅');
+    document.getElementById('pw-current').value = '';
+    document.getElementById('pw-new').value = '';
+  });
+
+  if(isAdmin){
+    renderAdminUsersList();
+    document.getElementById('admin-add-user-btn').addEventListener('click', openAddUserForm);
+  }
+}
+
+function renderAdminUsersList(){
+  const users = getUsers();
+  const listEl = document.getElementById('admin-users-list');
+  if(!listEl) return;
+  listEl.innerHTML = users.map(u=>`
+    <div class="task-item" data-username="${u.username}">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
+        <div>
+          <div class="d-name">${u.name}</div>
+          <div class="d-meta">${u.username} · ${ROLE_LABELS[u.role] || u.role}</div>
+        </div>
+      </div>
+      <div style="display:flex; gap:14px; margin-top:10px;">
+        <button type="button" class="task-remove admin-reset-pw" style="color:var(--accent);">↻ ریست رمز</button>
+        <button type="button" class="task-remove admin-delete-user">✕ حذف کاربر</button>
+      </div>
+    </div>
+  `).join('');
+
+  listEl.querySelectorAll('.admin-reset-pw').forEach(btn=>{
+    btn.addEventListener('click', (e)=>{
+      const username = e.target.closest('.task-item').dataset.username;
+      const users = getUsers();
+      const u = users.find(x=>x.username===username);
+      if(!u) return;
+      const defaultPw = buildDefaultPassword(u.name);
+      u.password = defaultPw;
+      saveUsers(users);
+      showToast(`رمز ${u.name} به ${defaultPw} ریست شد`);
+    });
+  });
+  listEl.querySelectorAll('.admin-delete-user').forEach(btn=>{
+    btn.addEventListener('click', (e)=>{
+      const username = e.target.closest('.task-item').dataset.username;
+      if(username === getSession().username){
+        showToast('نمی‌توانید حساب خودتان را حذف کنید');
+        return;
+      }
+      const users = getUsers().filter(u=>u.username !== username);
+      saveUsers(users);
+      renderAdminUsersList();
+      showToast('کاربر حذف شد');
+    });
+  });
+}
+
+function buildDefaultPassword(fullName){
+  // scheme: first 2 letters of first name + first 2 letters of last name + 1234 (Finglish, lowercase)
+  const parts = fullName.trim().toLowerCase().split(' ').filter(Boolean);
+  const first = (parts[0] || 'xx').slice(0,2);
+  const last = (parts[1] || 'xx').slice(0,2);
+  return first + last + '1234';
+}
+
+function openAddUserForm(){
+  document.getElementById('modal-sheet').innerHTML = `
+    <div class="modal-handle"></div>
+    <button class="modal-close" id="modal-close-btn">بستن</button>
+    <div style="clear:both; padding-top:8px;">
+      <h3 style="font-size:16px; margin-bottom:16px;">افزودن کاربر جدید</h3>
+      <div class="field">
+        <label class="field-label">نام کامل (فینگلیش برای رمز استفاده می‌شود)</label>
+        <input type="text" id="new-user-name" placeholder="مثلاً Ali Rezaei">
+      </div>
+      <div class="field">
+        <label class="field-label">نام کاربری</label>
+        <input type="text" id="new-user-username" placeholder="مثلاً ali.rezaei">
+      </div>
+      <div class="field">
+        <label class="field-label">سمت</label>
+        <select id="new-user-role">
+          <option value="foreman">فورمن شیفت</option>
+          <option value="production_manager">مدیر تولید</option>
+          <option value="operations_manager">مدیر بهره‌برداری</option>
+          <option value="planning_manager">مدیر برنامه‌ریزی (فقط توقفات)</option>
+          <option value="planning_supervisor">سرپرست برنامه‌ریزی (فقط توقفات)</option>
+          <option value="admin">ادمین</option>
+        </select>
+      </div>
+      <div class="login-error" id="new-user-error" style="margin-top:6px;"></div>
+      <button class="btn-primary" style="width:100%; margin-top:14px;" id="new-user-save-btn">افزودن کاربر</button>
+    </div>
+  `;
+  document.getElementById('modal-close-btn').addEventListener('click', closeDetail);
+  document.getElementById('new-user-save-btn').addEventListener('click', ()=>{
+    const name = document.getElementById('new-user-name').value.trim();
+    const username = document.getElementById('new-user-username').value.trim().toLowerCase();
+    const role = document.getElementById('new-user-role').value;
+    const errEl = document.getElementById('new-user-error');
+    if(!name || !username){
+      errEl.textContent = 'نام و نام کاربری را وارد کنید';
+      errEl.classList.add('show');
+      return;
+    }
+    const users = getUsers();
+    if(users.some(u=>u.username === username)){
+      errEl.textContent = 'این نام کاربری قبلاً استفاده شده است';
+      errEl.classList.add('show');
+      return;
+    }
+    const password = buildDefaultPassword(name);
+    users.push({ username, password, name, role, roleLabel: ROLE_LABELS[role] || role });
+    saveUsers(users);
+    showToast(`کاربر ساخته شد — رمز: ${password}`);
+    openSettingsModal();
+  });
+}
 
 /* ============ DATA ============ */
 const UNITS = [
@@ -717,18 +955,25 @@ UNITS.forEach(unit=>{
 
 function updateDeviceDot(key, v){
   const dot = document.getElementById('dot-'+key);
-  const colors = {green:'#1FA95C', yellow:'#D9A400', orange:'#E0791E', red:'#E23B3B', blue:'#2A7DE0', black:'#5B6472'};
-  dot.style.background = colors[v] || '#E4E7EC';
+  const colors = {green:'#189A56', yellow:'#C99400', orange:'#D96E1A', red:'#DC3A3A', blue:'#2874D9', black:'#5A6472'};
+  dot.style.background = colors[v] || '#E1E5EB';
 }
 
 function refreshSummary(){
-  let active=0, stop=0;
+  let active=0, stop=0, reported=0;
   Object.values(deviceState).forEach(d=>{
+    if(d.status){ reported++; }
     if(d.status==='green' || d.status==='yellow') active++;
     if(d.status==='red' || d.status==='orange') stop++;
   });
   document.getElementById('sum-active').textContent = toFa(active);
   document.getElementById('sum-stop').textContent = toFa(stop);
+
+  const pulseEl = document.getElementById('pulse-strip');
+  if(pulseEl){
+    const pct = reported > 0 ? Math.round((active / reported) * 100) : 0;
+    pulseEl.style.setProperty('--pulse-w', pct + '%');
+  }
 
   // unit badges
   UNITS.forEach(unit=>{
@@ -738,7 +983,7 @@ function refreshSummary(){
       const s = deviceState[deviceKey(unit.key,d)].status;
       if(s) counts[s] = (counts[s]||0)+1;
     });
-    const colors = {green:'#1FA95C', yellow:'#D9A400', orange:'#E0791E', red:'#E23B3B', blue:'#2A7DE0', black:'#5B6472'};
+    const colors = {green:'#189A56', yellow:'#C99400', orange:'#D96E1A', red:'#DC3A3A', blue:'#2874D9', black:'#5A6472'};
     badgesEl.innerHTML = Object.keys(counts).map(k=>`<span class="ubadge" style="background:${colors[k]}"></span>`).join('');
   });
 }
@@ -822,24 +1067,16 @@ function showToast(text){
   setTimeout(()=> t.classList.remove('show'), 2200);
 }
 
-/* ============ STORAGE (Firestore) ============ */
-let recordsCache = [];
+/* ============ STORAGE ============ */
+const STORAGE_KEY = 'teramShiftRecords';
 
 function getRecords(){
-  return recordsCache;
+  try{
+    return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+  }catch(e){ return []; }
 }
-
-function listenRecords(onChange){
-  db.collection('shiftRecords').orderBy('createdAt','desc').onSnapshot(snapshot=>{
-    recordsCache = snapshot.docs.map(doc=>doc.data());
-    if(onChange) onChange();
-  }, err=>{
-    console.error('Firestore listen error:', err);
-  });
-}
-
-async function addRecord(record){
-  await db.collection('shiftRecords').doc(String(record.id)).set(record);
+function saveRecords(list){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
 }
 
 /* ============ SUBMIT ============ */
@@ -882,13 +1119,12 @@ document.getElementById('submit-btn').addEventListener('click', ()=>{
     tasks: tasksOut
   };
 
-  addRecord(record).then(()=>{
-    showToast('تحویل شیفت با موفقیت ثبت شد ✅');
-    resetForm();
-  }).catch(err=>{
-    console.error(err);
-    showToast('خطا در ثبت — اتصال اینترنت را بررسی کنید');
-  });
+  const list = getRecords();
+  list.unshift(record);
+  saveRecords(list);
+
+  showToast('تحویل شیفت با موفقیت ثبت شد ✅');
+  resetForm();
 });
 
 function resetForm(){
@@ -959,6 +1195,59 @@ function planLabel(v){
   return found ? found.label : '—';
 }
 
+/* ============ EXCEL EXPORT ============ */
+function exportToExcel(){
+  const list = getRecords();
+  if(list.length === 0){
+    showToast('هیچ سابقه‌ای برای خروجی گرفتن وجود ندارد');
+    return;
+  }
+  const rows = [];
+  list.forEach(rec=>{
+    const dt = new Date(rec.createdAt);
+    const dateStr = dt.toLocaleDateString('fa-IR');
+    const timeStr = dt.toLocaleTimeString('fa-IR', {hour:'2-digit', minute:'2-digit'});
+
+    if(rec.devices.length === 0){
+      rows.push({
+        'تاریخ': dateStr, 'ساعت': timeStr,
+        'شیفت مبدأ': rec.shiftFrom, 'شیفت مقصد': rec.shiftTo,
+        'فورمن تحویل‌دهنده': rec.foremanFrom, 'فورمن تحویل‌گیرنده': rec.foremanTo,
+        'واحد': '', 'دستگاه': '', 'وضعیت': '', 'پلن': '',
+        'تولید': '', 'توقف (دقیقه)': '', 'علت توقف': '', 'توضیحات': ''
+      });
+      return;
+    }
+
+    rec.devices.forEach(d=>{
+      rows.push({
+        'تاریخ': dateStr, 'ساعت': timeStr,
+        'شیفت مبدأ': rec.shiftFrom, 'شیفت مقصد': rec.shiftTo,
+        'فورمن تحویل‌دهنده': rec.foremanFrom, 'فورمن تحویل‌گیرنده': rec.foremanTo,
+        'واحد': d.unit, 'دستگاه': d.device,
+        'وضعیت': statusLabel(d.status), 'پلن': planLabel(d.plan),
+        'تولید': d.production || '', 'توقف (دقیقه)': d.stopMinutes || '',
+        'علت توقف': d.stopReason || '', 'توضیحات': d.stopNote || d.note || ''
+      });
+    });
+  });
+
+  const worksheet = XLSX.utils.json_to_sheet(rows);
+  worksheet['!cols'] = [
+    {wch:12},{wch:8},{wch:10},{wch:10},{wch:18},{wch:18},
+    {wch:14},{wch:14},{wch:14},{wch:12},{wch:10},{wch:12},{wch:18},{wch:24}
+  ];
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'گزارش شیفت‌ها');
+
+  const today = new Date();
+  const fileName = `teram-shift-report-${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}.xlsx`;
+  XLSX.writeFile(workbook, fileName);
+  showToast('فایل اکسل دانلود شد ✅');
+}
+
+document.getElementById('export-excel-btn').addEventListener('click', exportToExcel);
+
 function openDetail(id){
   const list = getRecords();
   const rec = list.find(r=>r.id===id);
@@ -1016,12 +1305,6 @@ document.getElementById('modal-backdrop').addEventListener('click', (e)=>{
 /* ============ INIT ============ */
 addTask();
 refreshSummary();
-
-listenRecords(()=>{
-  const activeView = document.querySelector('.view.active');
-  if(activeView && activeView.id === 'view-history') renderHistory();
-  if(activeView && activeView.id === 'view-stops') renderStops();
-});
 
 const existingSession = getSession();
 if(existingSession){
